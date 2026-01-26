@@ -1,0 +1,17 @@
+# Build artifacts
+*.o
+*.ko
+*.mod.c
+*.a
+*.so
+
+# Editor
+.vscode/
+*.swp
+
+# OS
+.DS_Store
+
+# Kernel
+modules.order
+Module.symvers
