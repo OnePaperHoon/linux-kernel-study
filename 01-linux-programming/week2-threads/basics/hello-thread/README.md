@@ -441,7 +441,7 @@ printf() (thread 종료 후)
 
 ---
 
-**Author:** OnepaperHoon
+**Author:** OnepaperHoon  
 **Date:** January 2025  
 **Project:** Linux Kernel Study - Week 2, Day 3  
 **Topic:** Thread Basics - Part 1
