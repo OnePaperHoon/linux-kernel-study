@@ -4,8 +4,8 @@
 #include <unistd.h>
 #include <time.h>
 
-#define PRODUCERS 2
-#define CONSUMERS 3
+#define PRODUCERS 3
+#define CONSUMERS 5
 #define BUFFER_SIZE 10
 #define TOTAL_ITEMS 50
 
@@ -31,7 +31,19 @@ void *producer_thread(void *arg)
 		// 버퍼가 가득 찼으면 대기
 		while (count == BUFFER_SIZE)
 		{
-			pthread_cond_wait(&not_empty, &mutex);
+			if (produced_count == TOTAL_ITEMS)
+			{
+				pthread_cond_broadcast(&not_empty);
+				pthread_mutex_unlock(&mutex);
+				return NULL;
+			}
+			pthread_cond_wait(&not_full, &mutex);
+		}
+		if (produced_count == TOTAL_ITEMS)
+		{
+			pthread_cond_broadcast(&not_empty);
+			pthread_mutex_unlock(&mutex);
+			return NULL;
 		}
 		// 버퍼에 아이템 추가
 		buffer[in] = item;
@@ -41,21 +53,19 @@ void *producer_thread(void *arg)
 		printf("Producer %ld produced %d (Total produced: %d)\n", (
 			long)arg, item, produced_count);
 		// 컨슈머에게 알림
-		pthread_cond_broadcast(&not_empty);
+		pthread_cond_broadcast(&not_full);
 		pthread_mutex_unlock(&mutex);
 		// 생산 속도 조절
-		usleep(rand() % 100000);
-		if (produced_count >= TOTAL_ITEMS)
-			break;
+		usleep(rand() % 1000);
+		
 	}
 	return NULL;
 }
 
-void consume_item(int item)
+void consume_item(void)
 {
 	// 소비 속도 조절
-	(void)item; // 사용하지 않는 변수 경고 방지
-	usleep(rand() % 150000);
+	usleep(rand() % 1000);
 }
 
 void *consumer_thread(void *arg)
@@ -65,11 +75,15 @@ void *consumer_thread(void *arg)
 	while (1)
 	{
 		pthread_mutex_lock(&mutex);
-
-		// 버퍼가 비어있으면 대기
 		while (count == 0)
 		{
-			pthread_cond_wait(&not_full, &mutex);
+			if (consumed_count == TOTAL_ITEMS)
+			{
+				pthread_cond_broadcast(&not_full);
+				pthread_mutex_unlock(&mutex);
+				return NULL;
+			}
+			pthread_cond_wait(&not_empty, &mutex);
 		}
 
 		// 버퍼에서 아이템 제거
@@ -80,15 +94,19 @@ void *consumer_thread(void *arg)
 		printf("Consumer %ld consumed %d (Total consumed: %d)\n", (
 			long)arg, item, consumed_count);
 		
-		// 프로듀서에게 알림
-		pthread_cond_signal(&not_full);
+
+		pthread_cond_broadcast(&not_full);
 		pthread_mutex_unlock(&mutex);
-		consume_item(item);
+		consume_item();
 	}
 	return NULL;
 }
 
+/* 
+	프로듀서가 3이고 컨슈머가 3일때 종료 되지 않고 블록킹 현상이 있음
+	이때 프로듀서가 모두 종료 되어도 컨슈머는 계속 대기 상태에 빠지게 됨
 
+*/
 
 /* 
 	프로 듀서는 총 TOTAL_ITEMS 개의 아이템을 생산하고,
@@ -124,7 +142,7 @@ int main()
 	// 컨슈머 스레드 종료 대기
 	for (int i = 0; i < CONSUMERS; i++)
 	{
-		pthread_cancel(consumers[i]);
+		//pthread_cancel(consumers[i]);
 		pthread_join(consumers[i], NULL);
 	}
 	return 0;
