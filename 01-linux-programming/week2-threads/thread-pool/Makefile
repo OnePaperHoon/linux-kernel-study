@@ -1,4 +1,4 @@
-NAME			=	producer_consumer
+NAME			=	thread_pool
 
 CC				=	cc
 CFLAGS			=	-Wall -Wextra -Werror -pthread
@@ -6,9 +6,9 @@ DEBUG_FLAGS		=	-g
 SANITIZE_FLAGS	=	-fsanitize=address
 RM				=	rm -f
 
-INCLUDES		=	process.h
+INCLUDES		=	thread_pool.h
 
-SRCS			=	producer_consumer.c
+SRCS			=	thread_pool.c main.c
 
 OBJS			=	$(SRCS:.c=.o)
 
@@ -67,18 +67,6 @@ leak: valgrind
 
 memcheck: valgrind
 
-# Quick checks
-count: $(NAME)
-	@./$(NAME) 2>/dev/null | head -1
-
-check: $(NAME)
-	@echo $(YELLOW)"=== Quick Check ==="$(NONE)
-	@echo $(BLUE)"Process count:"$(NONE)
-	@./$(NAME) 2>/dev/null | head -1
-	@echo ""
-	@echo $(BLUE)"Memory check:"$(NONE)
-	@valgrind --leak-check=full ./$(NAME) 2>&1 | grep -E "(in use at exit|ERROR SUMMARY)"
-
 # Help
 help:
 	@echo "$(YELLOW)Available targets:$(NONE)"
@@ -90,11 +78,10 @@ help:
 	@echo "$(YELLOW)Testing:$(NONE)"
 	@echo "  $(BLUE)make test$(NONE)      - Run $(NAME)"
 	@echo "  $(BLUE)make valgrind$(NONE)  - Check memory leaks"
-	@echo "  $(BLUE)make check$(NONE)     - Quick memory check"
 	@echo ""
 	@echo "$(YELLOW)Debug:$(NONE)"
 	@echo "  $(PURPLE)make debug$(NONE)     - Build with debug symbols"
 	@echo "  $(RED)make sanitize$(NONE)  - Build with address sanitizer"
 
 .PHONY: all clean fclean re debug sanitize test run valgrind leak \
-        memcheck count check help
+        memcheck help

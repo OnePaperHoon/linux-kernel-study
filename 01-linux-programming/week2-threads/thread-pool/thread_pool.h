@@ -6,7 +6,6 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <sys/types.h>
-#include <error.h>
 #include <errno.h>
 #include <stdbool.h>
 
@@ -39,8 +38,11 @@ typedef struct {
     pthread_mutex_t mutex;          // 동기화
     pthread_cond_t not_empty;       // Queue에 Task가 있을 때 신호
     pthread_cond_t not_full;        // Queue에 빈 공간이 있을 때 신호 
-    bool shutdown;                  // 종료 플래그    
+    bool shutdown;                  // 종료 플래그
     size_t thread_count;            // 스레드 수
+    size_t queue_size;              // 현재 큐에 있는 테스크 수
+    size_t active_tasks;            // 현재 실행 중인 테스크 수
+    pthread_cond_t idle;            // 모든 테스크 완료 대기용 신호
 }   thread_pool_t;
 
 /**
