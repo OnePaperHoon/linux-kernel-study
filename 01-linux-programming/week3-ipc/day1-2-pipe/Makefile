@@ -1,4 +1,4 @@
-NAME			=	thread_pool
+NAME			=	pipe_basic
 
 CC				=	cc
 CFLAGS			=	-Wall -Wextra -Werror -pthread
@@ -6,9 +6,9 @@ DEBUG_FLAGS		=	-g
 SANITIZE_FLAGS	=	-fsanitize=address
 RM				=	rm -f
 
-INCLUDES		=	thread_pool.h
+INCLUDES		=	
 
-SRCS			=	thread_pool.c main.c
+SRCS			=	pipe_basic.c
 
 OBJS			=	$(SRCS:.c=.o)
 
