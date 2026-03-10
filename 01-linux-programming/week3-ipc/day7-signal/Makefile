@@ -1,16 +1,13 @@
-NAME			=	thread_pool
+SIG_BASIC		=	signal_basic
+SIG_PC			=	signal_parent_child
+
+NAMES			=	$(SIG_BASIC) $(SIG_PC)
 
 CC				=	cc
-CFLAGS			=	-Wall -Wextra -Werror -pthread
+CFLAGS			=	-Wall -Wextra -Werror
 DEBUG_FLAGS		=	-g
 SANITIZE_FLAGS	=	-fsanitize=address
 RM				=	rm -f
-
-INCLUDES		=	thread_pool.h
-
-SRCS			=	thread_pool.c main.c
-
-OBJS			=	$(SRCS:.c=.o)
 
 # Colors
 NONE			=	'\033[0m'
@@ -22,24 +19,25 @@ PURPLE			=	'\033[35m'
 BLUE			=	'\033[34m'
 RED				=	'\033[31m'
 
-all: $(NAME)
+all: $(NAMES)
 
-$(NAME): $(OBJS)
-	@echo $(CURSIVE)$(YELLOW)"      - Linking $(NAME) -"$(NONE)
-	@$(CC) $(CFLAGS) $^ -o $@
-	@echo $(GREEN)"      - $(NAME) Complete! -"$(NONE)
-
-%.o: %.c $(INCLUDES)
+$(SIG_BASIC): signal_basic.c
 	@echo $(CURSIVE)$(GRAY)"      - Compiling $< -"$(NONE)
-	@$(CC) $(CFLAGS) -c $< -o $@
+	@$(CC) $(CFLAGS) $< -o $@
+	@echo $(GREEN)"      - $@ Complete! -"$(NONE)
+
+$(SIG_PC): signal_parent_child.c
+	@echo $(CURSIVE)$(GRAY)"      - Compiling $< -"$(NONE)
+	@$(CC) $(CFLAGS) $< -o $@
+	@echo $(GREEN)"      - $@ Complete! -"$(NONE)
 
 clean:
-	@$(RM) $(OBJS)
+	@$(RM) *.o
 	@echo $(CURSIVE)$(BLUE)"      - Cleaned object files -"$(NONE)
 
 fclean: clean
-	@$(RM) $(NAME)
-	@echo $(CURSIVE)$(PURPLE)"      - Cleaned $(NAME) -"$(NONE)
+	@$(RM) $(NAMES)
+	@echo $(CURSIVE)$(PURPLE)"      - Cleaned binaries -"$(NONE)
 
 re: fclean all
 
@@ -53,15 +51,19 @@ sanitize: re
 	@echo $(RED)"      - Address sanitizer enabled -"$(NONE)
 
 # Testing targets
-test: $(NAME)
-	@echo $(BLUE)"      - Running $(NAME) -"$(NONE)
-	@./$(NAME)
+test: $(SIG_BASIC)
+	@echo $(BLUE)"      - Running $(SIG_BASIC) (Ctrl+C 3번으로 종료) -"$(NONE)
+	@./$(SIG_BASIC)
+
+test-pc: $(SIG_PC)
+	@echo $(BLUE)"      - Running $(SIG_PC) -"$(NONE)
+	@./$(SIG_PC)
 
 run: test
 
-valgrind: $(NAME)
-	@echo $(BLUE)"      - Running Valgrind -"$(NONE)
-	@valgrind --leak-check=full --show-leak-kinds=all ./$(NAME)
+valgrind: $(SIG_PC)
+	@echo $(BLUE)"      - Running Valgrind (signal_parent_child) -"$(NONE)
+	@valgrind --leak-check=full --show-leak-kinds=all ./$(SIG_PC)
 
 leak: valgrind
 
@@ -70,18 +72,18 @@ memcheck: valgrind
 # Help
 help:
 	@echo "$(YELLOW)Available targets:$(NONE)"
-	@echo "  $(GREEN)make$(NONE)          - Build $(NAME)"
-	@echo "  $(GREEN)make re$(NONE)       - Rebuild $(NAME)"
-	@echo "  $(GREEN)make clean$(NONE)    - Remove object files"
-	@echo "  $(GREEN)make fclean$(NONE)   - Remove all build files"
+	@echo "  $(GREEN)make$(NONE)            - Build all (signal_basic, signal_parent_child)"
+	@echo "  $(GREEN)make re$(NONE)         - Rebuild all"
+	@echo "  $(GREEN)make clean$(NONE)      - Remove object files"
+	@echo "  $(GREEN)make fclean$(NONE)     - Remove all build files"
 	@echo ""
 	@echo "$(YELLOW)Testing:$(NONE)"
-	@echo "  $(BLUE)make test$(NONE)      - Run $(NAME)"
-	@echo "  $(BLUE)make valgrind$(NONE)  - Check memory leaks"
+	@echo "  $(BLUE)make test$(NONE)        - signal_basic 실행 (Ctrl+C 3번으로 종료)"
+	@echo "  $(BLUE)make test-pc$(NONE)     - signal_parent_child 실행"
+	@echo "  $(BLUE)make valgrind$(NONE)    - Memory leak check"
 	@echo ""
 	@echo "$(YELLOW)Debug:$(NONE)"
-	@echo "  $(PURPLE)make debug$(NONE)     - Build with debug symbols"
-	@echo "  $(RED)make sanitize$(NONE)  - Build with address sanitizer"
+	@echo "  $(PURPLE)make debug$(NONE)      - Build with debug symbols"
+	@echo "  $(RED)make sanitize$(NONE)   - Build with address sanitizer"
 
-.PHONY: all clean fclean re debug sanitize test run valgrind leak \
-        memcheck help
+.PHONY: all clean fclean re debug sanitize test test-pc run valgrind leak memcheck help
