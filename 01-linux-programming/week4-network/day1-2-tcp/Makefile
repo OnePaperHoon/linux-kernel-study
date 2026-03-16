@@ -8,10 +8,6 @@ DEBUG_FLAGS		=	-g
 SANITIZE_FLAGS	=	-fsanitize=address
 RM				=	rm -f
 
-INCLUDES		=
-
-OBJS			=	$(SRCS:.c=.o)
-
 # Colors
 NONE			=	'\033[0m'
 GREEN			=	'\033[32m'
@@ -22,24 +18,32 @@ PURPLE			=	'\033[35m'
 BLUE			=	'\033[34m'
 RED				=	'\033[31m'
 
-all: $(NAME)
+all: $(SERVER) $(CLIENT) $(MULTI_CLIENT)
 
-$(NAME): $(OBJS)
-	@echo $(CURSIVE)$(YELLOW)"      - Linking $(NAME) -"$(NONE)
-	@$(CC) $(CFLAGS) $^ -o $@
-	@echo $(GREEN)"      - $(NAME) Complete! -"$(NONE)
-
-%.o: %.c $(INCLUDES)
+# tcp_multi_client는 pthread를 사용하므로 -pthread 링크 필요
+$(MULTI_CLIENT): tcp_multi_client.c
 	@echo $(CURSIVE)$(GRAY)"      - Compiling $< -"$(NONE)
-	@$(CC) $(CFLAGS) -c $< -o $@
+	@$(CC) $(CFLAGS) $< -o $@ -pthread
+	@echo $(GREEN)"      - $@ Complete! -"$(NONE)
+
+# 나머지는 단일 소스 파일로 컴파일
+$(SERVER): tcp_echo_server.c
+	@echo $(CURSIVE)$(GRAY)"      - Compiling $< -"$(NONE)
+	@$(CC) $(CFLAGS) $< -o $@
+	@echo $(GREEN)"      - $@ Complete! -"$(NONE)
+
+$(CLIENT): tcp_echo_client.c
+	@echo $(CURSIVE)$(GRAY)"      - Compiling $< -"$(NONE)
+	@$(CC) $(CFLAGS) $< -o $@
+	@echo $(GREEN)"      - $@ Complete! -"$(NONE)
 
 clean:
-	@$(RM) $(OBJS)
+	@$(RM) *.o
 	@echo $(CURSIVE)$(BLUE)"      - Cleaned object files -"$(NONE)
 
 fclean: clean
-	@$(RM) $(NAME)
-	@echo $(CURSIVE)$(PURPLE)"      - Cleaned $(NAME) -"$(NONE)
+	@$(RM) $(SERVER) $(CLIENT) $(MULTI_CLIENT)
+	@echo $(CURSIVE)$(PURPLE)"      - Cleaned all binaries -"$(NONE)
 
 re: fclean all
 
@@ -53,35 +57,34 @@ sanitize: re
 	@echo $(RED)"      - Address sanitizer enabled -"$(NONE)
 
 # Testing targets
-test: $(NAME)
-	@echo $(BLUE)"      - Running $(NAME) -"$(NONE)
-	@./$(NAME)
+test: all
+	@echo $(BLUE)"      - Run server in background, then test clients -"$(NONE)
+	@echo $(YELLOW)"      Usage:"$(NONE)
+	@echo "        Terminal 1: ./$(SERVER)"
+	@echo "        Terminal 2: ./$(CLIENT)"
+	@echo "        Terminal 2: ./$(MULTI_CLIENT)"
 
-run: test
-
-valgrind: $(NAME)
-	@echo $(BLUE)"      - Running Valgrind -"$(NONE)
-	@valgrind --leak-check=full --show-leak-kinds=all ./$(NAME)
+valgrind: $(SERVER)
+	@echo $(BLUE)"      - Running Valgrind on $(SERVER) -"$(NONE)
+	@valgrind --leak-check=full --show-leak-kinds=all ./$(SERVER)
 
 leak: valgrind
-
 memcheck: valgrind
 
 # Help
 help:
 	@echo "$(YELLOW)Available targets:$(NONE)"
-	@echo "  $(GREEN)make$(NONE)          - Build $(NAME)"
-	@echo "  $(GREEN)make re$(NONE)       - Rebuild $(NAME)"
-	@echo "  $(GREEN)make clean$(NONE)    - Remove object files"
-	@echo "  $(GREEN)make fclean$(NONE)   - Remove all build files"
+	@echo "  $(GREEN)make$(NONE)              - Build all (server, client, multi_client)"
+	@echo "  $(GREEN)make re$(NONE)           - Rebuild all"
+	@echo "  $(GREEN)make clean$(NONE)        - Remove object files"
+	@echo "  $(GREEN)make fclean$(NONE)       - Remove all binaries"
 	@echo ""
 	@echo "$(YELLOW)Testing:$(NONE)"
-	@echo "  $(BLUE)make test$(NONE)      - Run $(NAME)"
-	@echo "  $(BLUE)make valgrind$(NONE)  - Check memory leaks"
+	@echo "  $(BLUE)make test$(NONE)          - Show usage instructions"
+	@echo "  $(BLUE)make valgrind$(NONE)      - Check memory leaks (server)"
 	@echo ""
 	@echo "$(YELLOW)Debug:$(NONE)"
-	@echo "  $(PURPLE)make debug$(NONE)     - Build with debug symbols"
-	@echo "  $(RED)make sanitize$(NONE)  - Build with address sanitizer"
+	@echo "  $(PURPLE)make debug$(NONE)         - Build with debug symbols"
+	@echo "  $(RED)make sanitize$(NONE)      - Build with address sanitizer"
 
-.PHONY: all clean fclean re debug sanitize test run valgrind leak \
-        memcheck help
+.PHONY: all clean fclean re debug sanitize test valgrind leak memcheck help
