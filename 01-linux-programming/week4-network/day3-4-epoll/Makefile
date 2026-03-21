@@ -1,16 +1,15 @@
-NAME			=	pipe_basic
+SELECT_SERVER	=	select_echo_server
+POLL_SERVER		=	poll_echo_server
+EPOLL_SERVER	=	epoll_echo_server
+BENCHMARK		=	benchmark
 
 CC				=	cc
-CFLAGS			=	-Wall -Wextra -Werror -pthread
+CFLAGS			=	-Wall -Wextra -Werror
 DEBUG_FLAGS		=	-g
 SANITIZE_FLAGS	=	-fsanitize=address
 RM				=	rm -f
 
-INCLUDES		=	
-
-SRCS			=	pipe_basic.c
-
-OBJS			=	$(SRCS:.c=.o)
+ALL_BINS		=	$(SELECT_SERVER) $(POLL_SERVER) $(EPOLL_SERVER) $(BENCHMARK)
 
 # Colors
 NONE			=	'\033[0m'
@@ -22,24 +21,36 @@ PURPLE			=	'\033[35m'
 BLUE			=	'\033[34m'
 RED				=	'\033[31m'
 
-all: $(NAME)
+all: $(ALL_BINS)
 
-$(NAME): $(OBJS)
-	@echo $(CURSIVE)$(YELLOW)"      - Linking $(NAME) -"$(NONE)
-	@$(CC) $(CFLAGS) $^ -o $@
-	@echo $(GREEN)"      - $(NAME) Complete! -"$(NONE)
-
-%.o: %.c $(INCLUDES)
+# epoll은 Linux 전용 — macOS에서는 링크만 되고 실행 시 에러남
+$(SELECT_SERVER): select_echo_server.c
 	@echo $(CURSIVE)$(GRAY)"      - Compiling $< -"$(NONE)
-	@$(CC) $(CFLAGS) -c $< -o $@
+	@$(CC) $(CFLAGS) $< -o $@
+	@echo $(GREEN)"      - $@ Complete! -"$(NONE)
+
+$(POLL_SERVER): poll_echo_server.c
+	@echo $(CURSIVE)$(GRAY)"      - Compiling $< -"$(NONE)
+	@$(CC) $(CFLAGS) $< -o $@
+	@echo $(GREEN)"      - $@ Complete! -"$(NONE)
+
+$(EPOLL_SERVER): epoll_echo_server.c
+	@echo $(CURSIVE)$(GRAY)"      - Compiling $< -"$(NONE)
+	@$(CC) $(CFLAGS) $< -o $@
+	@echo $(GREEN)"      - $@ Complete! -"$(NONE)
+
+$(BENCHMARK): benchmark.c
+	@echo $(CURSIVE)$(GRAY)"      - Compiling $< -"$(NONE)
+	@$(CC) $(CFLAGS) $< -o $@ -pthread
+	@echo $(GREEN)"      - $@ Complete! -"$(NONE)
 
 clean:
-	@$(RM) $(OBJS)
+	@$(RM) *.o
 	@echo $(CURSIVE)$(BLUE)"      - Cleaned object files -"$(NONE)
 
 fclean: clean
-	@$(RM) $(NAME)
-	@echo $(CURSIVE)$(PURPLE)"      - Cleaned $(NAME) -"$(NONE)
+	@$(RM) $(ALL_BINS)
+	@echo $(CURSIVE)$(PURPLE)"      - Cleaned all binaries -"$(NONE)
 
 re: fclean all
 
@@ -53,35 +64,37 @@ sanitize: re
 	@echo $(RED)"      - Address sanitizer enabled -"$(NONE)
 
 # Testing targets
-test: $(NAME)
-	@echo $(BLUE)"      - Running $(NAME) -"$(NONE)
-	@./$(NAME)
+test: all
+	@echo $(BLUE)"      - Servers built. Run each in a separate terminal: -"$(NONE)
+	@echo $(YELLOW)"      Usage:"$(NONE)
+	@echo "        Terminal 1: ./$(SELECT_SERVER)   (select 기반)"
+	@echo "        Terminal 1: ./$(POLL_SERVER)     (poll 기반)"
+	@echo "        Terminal 1: ./$(EPOLL_SERVER)    (epoll 기반, Linux only)"
+	@echo "        Terminal 2: ./$(BENCHMARK)       (성능 비교 벤치마크)"
 
-run: test
-
-valgrind: $(NAME)
-	@echo $(BLUE)"      - Running Valgrind -"$(NONE)
-	@valgrind --leak-check=full --show-leak-kinds=all ./$(NAME)
+valgrind: $(SELECT_SERVER)
+	@echo $(BLUE)"      - Running Valgrind on $(SELECT_SERVER) -"$(NONE)
+	@valgrind --leak-check=full --show-leak-kinds=all ./$(SELECT_SERVER)
 
 leak: valgrind
-
 memcheck: valgrind
 
 # Help
 help:
 	@echo "$(YELLOW)Available targets:$(NONE)"
-	@echo "  $(GREEN)make$(NONE)          - Build $(NAME)"
-	@echo "  $(GREEN)make re$(NONE)       - Rebuild $(NAME)"
-	@echo "  $(GREEN)make clean$(NONE)    - Remove object files"
-	@echo "  $(GREEN)make fclean$(NONE)   - Remove all build files"
+	@echo "  $(GREEN)make$(NONE)              - Build all servers + benchmark"
+	@echo "  $(GREEN)make re$(NONE)           - Rebuild all"
+	@echo "  $(GREEN)make clean$(NONE)        - Remove object files"
+	@echo "  $(GREEN)make fclean$(NONE)       - Remove all binaries"
 	@echo ""
-	@echo "$(YELLOW)Testing:$(NONE)"
-	@echo "  $(BLUE)make test$(NONE)      - Run $(NAME)"
-	@echo "  $(BLUE)make valgrind$(NONE)  - Check memory leaks"
+	@echo "$(YELLOW)Binaries:$(NONE)"
+	@echo "  $(BLUE)./$(SELECT_SERVER)$(NONE)   - select() 기반 에코 서버"
+	@echo "  $(BLUE)./$(POLL_SERVER)$(NONE)     - poll() 기반 에코 서버"
+	@echo "  $(BLUE)./$(EPOLL_SERVER)$(NONE)    - epoll() 기반 에코 서버 (Linux only)"
+	@echo "  $(BLUE)./$(BENCHMARK)$(NONE)       - select/poll/epoll 성능 비교"
 	@echo ""
 	@echo "$(YELLOW)Debug:$(NONE)"
-	@echo "  $(PURPLE)make debug$(NONE)     - Build with debug symbols"
-	@echo "  $(RED)make sanitize$(NONE)  - Build with address sanitizer"
+	@echo "  $(PURPLE)make debug$(NONE)         - Build with debug symbols"
+	@echo "  $(RED)make sanitize$(NONE)      - Build with address sanitizer"
 
-.PHONY: all clean fclean re debug sanitize test run valgrind leak \
-        memcheck help
+.PHONY: all clean fclean re debug sanitize test valgrind leak memcheck help
