@@ -1,26 +1,25 @@
-NAME			=	pipe_basic
+NAME		=	http_server
 
-CC				=	cc
-CFLAGS			=	-Wall -Wextra -Werror -pthread
-DEBUG_FLAGS		=	-g
+CC			=	cc
+CFLAGS		=	-Wall -Wextra -Werror
+DEBUG_FLAGS	=	-g
 SANITIZE_FLAGS	=	-fsanitize=address
-RM				=	rm -f
+RM			=	rm -f
 
-INCLUDES		=	
+SRCS		=	http_server.c \
+				http_parser.c
 
-SRCS			=	pipe_basic.c
-
-OBJS			=	$(SRCS:.c=.o)
+OBJS		=	$(SRCS:.c=.o)
 
 # Colors
-NONE			=	'\033[0m'
-GREEN			=	'\033[32m'
-YELLOW			=	'\033[33m'
-GRAY			=	'\033[2;37m'
-CURSIVE			=	'\033[3m'
-PURPLE			=	'\033[35m'
-BLUE			=	'\033[34m'
-RED				=	'\033[31m'
+NONE		=	'\033[0m'
+GREEN		=	'\033[32m'
+YELLOW		=	'\033[33m'
+GRAY		=	'\033[2;37m'
+CURSIVE		=	'\033[3m'
+PURPLE		=	'\033[35m'
+BLUE		=	'\033[34m'
+RED			=	'\033[31m'
 
 all: $(NAME)
 
@@ -29,7 +28,7 @@ $(NAME): $(OBJS)
 	@$(CC) $(CFLAGS) $^ -o $@
 	@echo $(GREEN)"      - $(NAME) Complete! -"$(NONE)
 
-%.o: %.c $(INCLUDES)
+%.o: %.c http_parser.h
 	@echo $(CURSIVE)$(GRAY)"      - Compiling $< -"$(NONE)
 	@$(CC) $(CFLAGS) -c $< -o $@
 
@@ -54,7 +53,7 @@ sanitize: re
 
 # Testing targets
 test: $(NAME)
-	@echo $(BLUE)"      - Running $(NAME) -"$(NONE)
+	@echo $(BLUE)"      - Running $(NAME) on port 8080 -"$(NONE)
 	@./$(NAME)
 
 run: test
@@ -64,7 +63,6 @@ valgrind: $(NAME)
 	@valgrind --leak-check=full --show-leak-kinds=all ./$(NAME)
 
 leak: valgrind
-
 memcheck: valgrind
 
 # Help
@@ -76,12 +74,15 @@ help:
 	@echo "  $(GREEN)make fclean$(NONE)   - Remove all build files"
 	@echo ""
 	@echo "$(YELLOW)Testing:$(NONE)"
-	@echo "  $(BLUE)make test$(NONE)      - Run $(NAME)"
+	@echo "  $(BLUE)make test$(NONE)      - Run server (port 8080)"
 	@echo "  $(BLUE)make valgrind$(NONE)  - Check memory leaks"
 	@echo ""
 	@echo "$(YELLOW)Debug:$(NONE)"
 	@echo "  $(PURPLE)make debug$(NONE)     - Build with debug symbols"
 	@echo "  $(RED)make sanitize$(NONE)  - Build with address sanitizer"
+	@echo ""
+	@echo "$(YELLOW)Usage:$(NONE)"
+	@echo "  Terminal 1: ./$(NAME)"
+	@echo "  Browser   : http://localhost:8080"
 
-.PHONY: all clean fclean re debug sanitize test run valgrind leak \
-        memcheck help
+.PHONY: all clean fclean re debug sanitize test run valgrind leak memcheck help

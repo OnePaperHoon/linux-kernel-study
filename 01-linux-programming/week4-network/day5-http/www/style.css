@@ -1,0 +1,186 @@
+/* =============================================================================
+   style.css — Linux Kernel Study / epoll HTTP Server
+   다크 터미널 테마 (배경: #0d1117, 강조: #00ff88 / #58a6ff)
+   ============================================================================= */
+
+/* 폰트 */
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap');
+
+/* 전역 리셋 */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+/* 기본 레이아웃 */
+body {
+    font-family: 'JetBrains Mono', 'Courier New', monospace;
+    background-color: #0d1117;
+    color: #c9d1d9;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    line-height: 1.7;
+}
+
+/* ─── 헤더 ──────────────────────────────────────────────────────────────────── */
+header {
+    background-color: #161b22;
+    border-bottom: 1px solid #30363d;
+    padding: 2rem 0;
+}
+
+.header-inner {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+}
+
+/* 터미널 프롬프트 느낌 */
+.prompt {
+    display: block;
+    font-size: 0.85rem;
+    color: #00ff88;
+    margin-bottom: 0.5rem;
+}
+
+.prompt::after {
+    content: ' _';
+    animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+    50% { opacity: 0; }
+}
+
+header h1 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #f0f6fc;
+    letter-spacing: -0.5px;
+}
+
+.subtitle {
+    color: #8b949e;
+    font-size: 0.9rem;
+    margin-top: 0.3rem;
+}
+
+/* ─── 메인 콘텐츠 ────────────────────────────────────────────────────────────── */
+main {
+    flex: 1;
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 0 1.5rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+    gap: 1.5rem;
+}
+
+/* ─── 카드 ───────────────────────────────────────────────────────────────────── */
+.card {
+    background-color: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    padding: 1.5rem;
+    transition: border-color 0.2s;
+}
+
+.card:hover {
+    border-color: #58a6ff;
+}
+
+/* 현재 섹션 강조 */
+.card.highlight {
+    border-color: #00ff88;
+    background-color: #0d1f12;
+}
+
+.card.highlight h2 {
+    color: #00ff88;
+}
+
+.card h2 {
+    font-size: 1rem;
+    color: #58a6ff;
+    margin-bottom: 0.6rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* [day1-2] 같은 태그 */
+.tag {
+    font-size: 0.75rem;
+    color: #8b949e;
+    background-color: #21262d;
+    border: 1px solid #30363d;
+    border-radius: 4px;
+    padding: 1px 6px;
+}
+
+.card p {
+    font-size: 0.85rem;
+    color: #8b949e;
+    margin-bottom: 0.8rem;
+}
+
+.card ul {
+    list-style: none;
+    margin-bottom: 1rem;
+}
+
+.card ul li {
+    font-size: 0.82rem;
+    color: #c9d1d9;
+    padding: 0.15rem 0;
+}
+
+/* 리스트 앞에 > 기호 */
+.card ul li::before {
+    content: '> ';
+    color: #00ff88;
+}
+
+/* ─── 코드 블록 ──────────────────────────────────────────────────────────────── */
+.code-block {
+    background-color: #0d1117;
+    border: 1px solid #30363d;
+    border-left: 3px solid #58a6ff;
+    border-radius: 4px;
+    padding: 0.8rem 1rem;
+    overflow-x: auto;
+}
+
+.card.highlight .code-block {
+    border-left-color: #00ff88;
+}
+
+.code-block pre {
+    font-size: 0.78rem;
+    color: #e6edf3;
+    white-space: pre;
+    line-height: 1.6;
+}
+
+/* ─── 푸터 ───────────────────────────────────────────────────────────────────── */
+footer {
+    background-color: #161b22;
+    border-top: 1px solid #30363d;
+    text-align: center;
+    padding: 1rem;
+    font-size: 0.78rem;
+    color: #484f58;
+}
+
+/* ─── 반응형 ─────────────────────────────────────────────────────────────────── */
+@media (max-width: 600px) {
+    main {
+        grid-template-columns: 1fr;
+    }
+
+    header h1 {
+        font-size: 1.3rem;
+    }
+}

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Linux Kernel Study — Week 4 Network</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <header>
+        <div class="header-inner">
+            <span class="prompt">root@kernel-study:~#</span>
+            <h1>Linux Network Programming</h1>
+            <p class="subtitle">Week 4 — epoll 기반 HTTP 서버</p>
+        </div>
+    </header>
+
+    <main>
+        <section class="card">
+            <h2><span class="tag">[day1-2]</span> TCP Echo Server</h2>
+            <p>소켓 생성부터 fork() 기반 다중 클라이언트 처리까지</p>
+            <ul>
+                <li>socket / bind / listen / accept</li>
+                <li>fork()로 자식 프로세스에서 클라이언트 처리</li>
+                <li>waitpid()로 좀비 프로세스 방지</li>
+            </ul>
+            <div class="code-block">
+                <pre>int server_fd = socket(AF_INET, SOCK_STREAM, 0);
+bind(server_fd, (struct sockaddr *)&amp;addr, sizeof(addr));
+listen(server_fd, 128);
+int client_fd = accept(server_fd, NULL, NULL);</pre>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2><span class="tag">[day3-4]</span> epoll Echo Server</h2>
+            <p>select/poll의 O(n) 한계를 극복한 이벤트 기반 I/O</p>
+            <ul>
+                <li>epoll_create1(0) — epoll 인스턴스 생성</li>
+                <li>epoll_ctl — fd 등록 / 수정 / 삭제</li>
+                <li>epoll_wait — 이벤트 발생한 fd만 반환 (O(1))</li>
+                <li>LT(Level Trigger) vs ET(Edge Trigger)</li>
+            </ul>
+            <div class="code-block">
+                <pre>int epfd = epoll_create1(0);
+ev.events  = EPOLLIN;
+ev.data.fd = listen_fd;
+epoll_ctl(epfd, EPOLL_CTL_ADD, listen_fd, &amp;ev);
+int nready = epoll_wait(epfd, events, MAX_EVENTS, -1);</pre>
+            </div>
+        </section>
+
+        <section class="card highlight">
+            <h2><span class="tag">[day5]</span> HTTP File Server ← 현재</h2>
+            <p>이 페이지를 제공하는 서버. epoll + HTTP/1.1 파싱</p>
+            <ul>
+                <li>HTTP 요청 라인 파싱 (메서드 / 경로 / 버전)</li>
+                <li>MIME 타입 판별 (확장자 기반)</li>
+                <li>정적 파일 서빙 (www/ 디렉토리)</li>
+                <li>404 Not Found 처리</li>
+            </ul>
+            <div class="code-block">
+                <pre>// HTTP 요청 라인 파싱
+sscanf(raw, "%7s %255s %15s",
+    method_str, req-&gt;path, req-&gt;version);
+
+// 파일 경로 매핑
+snprintf(file_path, sizeof(file_path),
+    "%s%s", WWW_ROOT, path);</pre>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2><span class="tag">[day6-7]</span> UDP Socket</h2>
+            <p>비연결형 프로토콜 — sendto / recvfrom</p>
+            <ul>
+                <li>connect() 없이 바로 sendto()</li>
+                <li>순서 보장 없음 / 재전송 없음</li>
+                <li>DNS, 게임 서버, 스트리밍에 사용</li>
+            </ul>
+            <div class="code-block">
+                <pre>sendto(fd, buf, len, 0,
+    (struct sockaddr *)&amp;addr, sizeof(addr));
+recvfrom(fd, buf, sizeof(buf), 0,
+    (struct sockaddr *)&amp;src, &amp;src_len);</pre>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>epoll HTTP server · port 8080 · Connection: close</p>
+    </footer>
+</body>
+</html>

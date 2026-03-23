@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 Not Found — Linux Kernel Study</title>
+    <link rel="stylesheet" href="/style.css">
+    <style>
+        /* 404 전용 스타일 */
+        .not-found {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+            text-align: center;
+            padding: 4rem 1.5rem;
+        }
+
+        .error-code {
+            font-size: 6rem;
+            font-weight: 700;
+            color: #ff7b72;
+            line-height: 1;
+            margin-bottom: 1rem;
+        }
+
+        .error-msg {
+            font-size: 1.1rem;
+            color: #8b949e;
+            margin-bottom: 2rem;
+        }
+
+        .error-detail {
+            background-color: #161b22;
+            border: 1px solid #30363d;
+            border-left: 3px solid #ff7b72;
+            border-radius: 4px;
+            padding: 1rem 1.5rem;
+            margin-bottom: 2rem;
+            text-align: left;
+            max-width: 500px;
+            width: 100%;
+        }
+
+        .error-detail pre {
+            font-size: 0.82rem;
+            color: #c9d1d9;
+            line-height: 1.7;
+        }
+
+        .back-link {
+            display: inline-block;
+            color: #58a6ff;
+            text-decoration: none;
+            font-size: 0.9rem;
+            border: 1px solid #58a6ff;
+            border-radius: 4px;
+            padding: 0.5rem 1.2rem;
+            transition: background-color 0.2s, color 0.2s;
+        }
+
+        .back-link:hover {
+            background-color: #58a6ff;
+            color: #0d1117;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-inner">
+            <span class="prompt">root@kernel-study:~#</span>
+            <h1>Linux Network Programming</h1>
+            <p class="subtitle">Week 4 — epoll 기반 HTTP 서버</p>
+        </div>
+    </header>
+
+    <main style="display: flex;">
+        <div class="not-found">
+            <div class="error-code">404</div>
+            <p class="error-msg">요청한 파일을 찾을 수 없습니다</p>
+
+            <div class="error-detail">
+                <pre>HTTP/1.1 404 Not Found
+Content-Type: text/html
+
+errno: ENOENT (No such file or directory)
+경로:  www/&lt;요청된 경로&gt;
+
+→ www/ 디렉토리에 파일이 존재하지 않습니다.</pre>
+            </div>
+
+            <a href="/" class="back-link">← 홈으로 돌아가기</a>
+        </div>
+    </main>
+
+    <footer>
+        <p>epoll HTTP server · port 8080 · Connection: close</p>
+    </footer>
+</body>
+</html>
