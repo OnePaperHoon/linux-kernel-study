@@ -1,5 +1,6 @@
 CompileFlags:
   Add:
+    # 기본 헤더
     - -I/usr/src/linux-headers-6.12.75+rpt-common-rpi/include
     - -I/usr/src/linux-headers-6.12.75+rpt-common-rpi/arch/arm64/include
     - -I/usr/src/linux-headers-6.12.75+rpt-common-rpi/arch/arm64/include/uapi
@@ -7,10 +8,21 @@ CompileFlags:
     - -I/usr/src/linux-headers-6.12.75+rpt-rpi-2712/arch/arm64/include/generated
     - -I/usr/src/linux-headers-6.12.75+rpt-rpi-2712/arch/arm64/include/generated/uapi
     - -I/usr/src/linux-headers-6.12.75+rpt-rpi-2712/include/generated/uapi
+
+    # 매크로
     - -D__KERNEL__
     - -DMODULE
+    - -DCONFIG_HZ=250
+    - -DKBUILD_MODNAME='"module"'
+    
     - --include=/usr/src/linux-headers-6.12.75+rpt-common-rpi/include/linux/compiler-version.h
     - --include=/usr/src/linux-headers-6.12.75+rpt-common-rpi/include/linux/kconfig.h
     - --include=/usr/src/linux-headers-6.12.75+rpt-common-rpi/include/linux/compiler_types.h
   Remove:
     - -mabi=lp64
+
+Diagnostics:
+  Suppress:
+    - incomplete_type
+  UnusedIncludes: None
+  MissingIncludes: None
