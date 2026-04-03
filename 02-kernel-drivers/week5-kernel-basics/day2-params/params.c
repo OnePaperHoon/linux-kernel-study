@@ -47,7 +47,7 @@ static int __init params_init(void) {
     printk(KERN_DEBUG "[DEBUG] Module loaded with:\n");
     printk(KERN_DEBUG " count = %d\n", count);
     printk(KERN_DEBUG " name = %s\n", name);
-    printk(KERN_DEBUG " debug = %s\n", debug ? "ture" : "false");
+    printk(KERN_DEBUG " debug = %s\n", debug ? "true" : "false");
   }
 
   // count만큼 인사 출력
