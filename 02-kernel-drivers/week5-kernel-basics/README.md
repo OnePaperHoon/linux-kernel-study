@@ -1,6 +1,6 @@
 # Week 5: Kernel Basics
 
-커널 모듈의 기초부터 문자 디바이스 드라이버까지 단계적으로 학습한다.
+커널 모듈의 기초부터 ioctl 인터페이스까지 단계적으로 학습한다.
 
 ## 학습 목차
 
@@ -10,6 +10,7 @@
 | Day 2 | 모듈 파라미터 — `module_param`, `/sys` 런타임 변경 | `day2-params/` |
 | Day 3 | `/proc` 파일시스템 — 가상 파일 생성, `seq_file`, `copy_from_user` | `day3-proc/` |
 | Day 4 | 문자 디바이스 드라이버 — `file_operations`, 메이저/마이너 번호 | `day4-chardev/` |
+| Day 5 | ioctl — 명령 코드 매크로, magic number, 양방향 데이터 전달 | `day5-ioctl/` |
 
 ---
 
@@ -121,3 +122,49 @@ kfree(device_buffer);
 ```
 
 `kmalloc`은 유저 공간의 `malloc`에 대응하지만, 연속된 물리 메모리를 보장한다는 점이 다르다.
+
+---
+
+### ioctl 명령 코드 매크로
+
+`read`/`write`로 표현하기 어려운 디바이스 고유 제어 명령을 전달하는 시스템 콜이다.
+
+```c
+int ioctl(int fd, unsigned long request, ...);
+```
+
+명령 코드는 32비트 정수로 인코딩되며, 네 가지 매크로로 생성한다.
+
+```c
+_IO  (type, nr)           // 데이터 없음
+_IOR (type, nr, datatype) // 커널 → 유저
+_IOW (type, nr, datatype) // 유저 → 커널
+_IOWR(type, nr, datatype) // 양방향
+```
+
+| 필드 | 비트 | 설명 |
+|------|------|------|
+| direction | 2비트 | 데이터 방향 (R/W/RW/none) |
+| size | 14비트 | 전달 데이터 크기 |
+| type (magic) | 8비트 | 드라이버 고유 식별자 |
+| nr | 8비트 | 명령 번호 |
+
+**매직 넘버**는 드라이버마다 다른 문자를 사용해 명령 코드 충돌을 방지한다. 핸들러에서 `_IOC_TYPE(cmd) != MAGIC`이면 `-ENOTTY`를 반환한다.
+
+**`unlocked_ioctl`**: 커널 2.6.36 이후 BKL(Big Kernel Lock) 없이 호출된다. 공유 상태 보호는 드라이버가 직접 책임진다.
+
+---
+
+### `ioctl_cmd.h` 공유 헤더 패턴
+
+```c
+// ioctl_cmd.h — 커널 모듈과 유저 프로그램이 함께 include
+#define IOCTL_MAGIC     'k'
+#define IOCTL_RESET     _IO  (IOCTL_MAGIC, 0)
+#define IOCTL_GET_COUNT _IOR (IOCTL_MAGIC, 1, int)
+#define IOCTL_SET_MSG   _IOW (IOCTL_MAGIC, 2, char[256])
+#define IOCTL_GET_MSG   _IOR (IOCTL_MAGIC, 3, char[256])
+#define IOCTL_EXCHANGE  _IOWR(IOCTL_MAGIC, 4, int)
+```
+
+명령 코드를 헤더 하나에 모아두면 커널 모듈과 유저 프로그램 사이의 불일치를 방지한다.
