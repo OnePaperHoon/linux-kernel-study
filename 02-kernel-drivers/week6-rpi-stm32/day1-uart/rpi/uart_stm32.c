@@ -14,7 +14,7 @@
 #include <linux/uaccess.h>
 
 #define DEVICE_NAME "stm32_uart"
-#define UART_DEVICE "/dev/ttyAMAO"
+#define UART_DEVICE "/dev/ttyAMA0"
 #define BUFFER_SIZE 1024
 
 static int major_number;
@@ -81,6 +81,12 @@ static ssize_t uart_receive(char *data, size_t len) {
  * 디바이스 열기
  */
 static int device_open(struct inode *inode, struct file *file) {
+  int ret;
+
+  ret = uart_open_port();
+  if (ret < 0)
+    return ret;
+
   printk(KERN_INFO "uart_stm32: Device opened\n");
 
   try_module_get(THIS_MODULE);
@@ -91,6 +97,8 @@ static int device_open(struct inode *inode, struct file *file) {
  * 디바이스 닫기
  */
 static int device_release(struct inode *inode, struct file *file) {
+  uart_close_port();
+
   printk(KERN_INFO "uart_stm32: Device closed\n");
 
   module_put(THIS_MODULE);
@@ -168,8 +176,6 @@ static struct file_operations fops = {
  * 모듈 초기화
  */
 static int __init uart_stm32_init(void) {
-  int ret;
-
   printk(KERN_INFO "====================================\n");
   printk(KERN_INFO "uart_stm32: Initializing\n");
 
@@ -181,14 +187,6 @@ static int __init uart_stm32_init(void) {
   }
 
   printk(KERN_INFO "uart_stm32: Registered with major %d\n", major_number);
-
-  // UART 포트 열기
-  ret = uart_open_port();
-  if (ret < 0) {
-    unregister_chrdev(major_number, DEVICE_NAME);
-    return ret;
-  }
-
   printk(KERN_INFO "uart_stm32: Create Device:\n");
   printk(KERN_INFO " sudo mknod /dev/%s c %d 0\n", DEVICE_NAME, major_number);
   printk(KERN_INFO " sudo chmod 666 /dev/%s\n", DEVICE_NAME);
@@ -201,7 +199,6 @@ static int __init uart_stm32_init(void) {
  * 모듈 종료
  */
 static void __exit uart_stm32_exit(void) {
-  uart_close_port();
   unregister_chrdev(major_number, DEVICE_NAME);
 
   printk(KERN_INFO "uart_stm32: Unregistered\n");
