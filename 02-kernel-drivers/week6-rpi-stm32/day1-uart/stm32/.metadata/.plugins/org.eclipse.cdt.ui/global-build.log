@@ -12,3 +12,10 @@ arm-none-eabi-size  UART_Echo.elf
    8812	     92	   2236	  11140	   2b84	UART_Echo.elf
 Finished building: default.size.stdout
  
+17:22:50 **** Incremental Build of configuration Release for project UART_Echo ****
+make -j7 all 
+arm-none-eabi-size  UART_Echo.elf 
+   text	   data	    bss	    dec	    hex	filename
+   8812	     92	   2236	  11140	   2b84	UART_Echo.elf
+Finished building: default.size.stdout
+ 
