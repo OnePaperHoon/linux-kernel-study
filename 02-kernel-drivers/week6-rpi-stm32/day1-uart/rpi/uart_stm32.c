@@ -14,7 +14,7 @@
 #include <linux/uaccess.h>
 
 #define DEVICE_NAME "stm32_uart"
-#define UART_DEVICE "/dev/ttyAMA0"
+#define UART_DEVICE "/dev/serial0"
 #define BUFFER_SIZE 1024
 
 static int major_number;
