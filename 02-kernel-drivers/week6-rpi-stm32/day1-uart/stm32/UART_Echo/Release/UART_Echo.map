@@ -86,7 +86,7 @@ Discarded input sections
  .data          0x00000000        0x0 ./Core/Src/stm32f4xx_hal_msp.o
  .bss           0x00000000        0x0 ./Core/Src/stm32f4xx_hal_msp.o
  .text.HAL_UART_MspDeInit
-                0x00000000       0x34 ./Core/Src/stm32f4xx_hal_msp.o
+                0x00000000       0x38 ./Core/Src/stm32f4xx_hal_msp.o
  .text          0x00000000        0x0 ./Core/Src/stm32f4xx_it.o
  .data          0x00000000        0x0 ./Core/Src/stm32f4xx_it.o
  .bss           0x00000000        0x0 ./Core/Src/stm32f4xx_it.o
@@ -906,9 +906,9 @@ LOAD /Applications/STM32CubeIDE.app/Contents/Eclipse/plugins/com.st.stm32cube.id
  .text.SysTick_Handler
                 0x08000850        0x4 ./Core/Src/stm32f4xx_it.o
                 0x08000850                SysTick_Handler
- .text.USART2_IRQHandler
+ .text.USART1_IRQHandler
                 0x08000854        0xc ./Core/Src/stm32f4xx_it.o
-                0x08000854                USART2_IRQHandler
+                0x08000854                USART1_IRQHandler
  .text._sbrk    0x08000860       0x3c ./Core/Src/sysmem.o
                 0x08000860                _sbrk
  .text.SystemInit
@@ -991,12 +991,12 @@ LOAD /Applications/STM32CubeIDE.app/Contents/Eclipse/plugins/com.st.stm32cube.id
                 0x08000900                TIM1_TRG_COM_TIM11_IRQHandler
                 0x08000900                OTG_HS_IRQHandler
                 0x08000900                EXTI1_IRQHandler
+                0x08000900                USART2_IRQHandler
                 0x08000900                I2C2_ER_IRQHandler
                 0x08000900                DMA2_Stream1_IRQHandler
                 0x08000900                CAN1_SCE_IRQHandler
                 0x08000900                FLASH_IRQHandler
                 0x08000900                DMA2_Stream4_IRQHandler
-                0x08000900                USART1_IRQHandler
                 0x08000900                OTG_FS_IRQHandler
                 0x08000900                SPI3_IRQHandler
                 0x08000900                DMA1_Stream4_IRQHandler
@@ -1283,8 +1283,8 @@ LOAD /Applications/STM32CubeIDE.app/Contents/Eclipse/plugins/com.st.stm32cube.id
                 0x2000007a      0x100 ./Core/Src/main.o
                 0x2000007a                rx_buffer
  *fill*         0x2000017a        0x2 
- .bss.huart2    0x2000017c       0x48 ./Core/Src/main.o
-                0x2000017c                huart2
+ .bss.huart1    0x2000017c       0x48 ./Core/Src/main.o
+                0x2000017c                huart1
  .bss.__sbrk_heap_end
                 0x200001c4        0x4 ./Core/Src/sysmem.o
  .bss.uwTick    0x200001c8        0x4 ./Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.o

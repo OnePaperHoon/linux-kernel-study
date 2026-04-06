@@ -7,3 +7,15 @@
 2026-04-06 15:33:51,994 [INFO] LogOutputStream:77 - [STDOUT_REDIRECT] use arm architecture
 2026-04-06 15:33:51,994 [INFO] LogOutputStream:77 - [STDOUT_REDIRECT] Architecture: Apple Silicon (ARM64)
 2026-04-06 15:54:27,932 [ERROR] LogOutputStream:75 - [STDERR_REDIRECT] 
+2026-04-06 17:52:12,820 [INFO] LogOutputStream:77 - [STDOUT_REDIRECT] ***WARNING: Display must be created on main thread due to Cocoa restrictions. Use vmarg -XstartOnFirstThread
+2026-04-06 17:52:12,827 [INFO] LogOutputStream:77 - [STDOUT_REDIRECT] ***WARNING: Display must be created on main thread due to Cocoa restrictions. Use vmarg -XstartOnFirstThread
+2026-04-06 17:52:13,031 [INFO] LogOutputStream:77 - [STDOUT_REDIRECT] ***WARNING: Display must be created on main thread due to Cocoa restrictions. Use vmarg -XstartOnFirstThread
+2026-04-06 17:52:38,691 [INFO] Activator:176 - 
+
+
+2026-04-06 17:52:38,692 [INFO] Activator:177 - !SESSION log4j initialized
+2026-04-06 17:52:40,650 [INFO] LogOutputStream:77 - [STDOUT_REDIRECT] 
+2026-04-06 17:52:40,789 [INFO] LogOutputStream:77 - [STDOUT_REDIRECT] Start the detection of the machine's architecture
+2026-04-06 17:52:40,799 [INFO] LogOutputStream:77 - [STDOUT_REDIRECT] use arm architecture
+2026-04-06 17:52:40,799 [INFO] LogOutputStream:77 - [STDOUT_REDIRECT] Architecture: Apple Silicon (ARM64)
+2026-04-06 17:52:58,800 [ERROR] LogOutputStream:75 - [STDERR_REDIRECT] 
