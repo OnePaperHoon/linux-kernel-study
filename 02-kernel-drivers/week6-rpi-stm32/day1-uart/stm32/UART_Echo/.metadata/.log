@@ -1,0 +1,29 @@
+!SESSION 2026-04-06 15:29:13.738 -----------------------------------------------
+eclipse.buildId=Version 2.1.1
+java.version=21.0.9
+java.vendor=Eclipse Adoptium
+BootLoader constants: OS=macosx, ARCH=aarch64, WS=cocoa, NL=ko_KR
+Framework arguments:  -keyring /Users/onepaperhoon/.eclipse_keyring
+Command-line arguments:  -os macosx -ws cocoa -arch aarch64 -keyring /Users/onepaperhoon/.eclipse_keyring
+
+!ENTRY com.st.stm32cube.ide.mcu.informationcenter 1 1 2026-04-06 15:29:33.083
+!MESSAGE Log4j2 initialized with config file /Users/onepaperhoon/linux-kernel-study/02-kernel-drivers/week6-rpi-stm32/day1-uart/stm32/UART_Echo/.metadata/.log4j2.xml
+
+!ENTRY com.st.stm32cube.ide.mcu.ide 1 1 2026-04-06 15:29:35.102
+!MESSAGE Started RMI Server, listening on port 41337
+
+!ENTRY com.st.stm32cube.ide.mcu.ide 1 1 2026-04-06 15:29:38.891
+!MESSAGE ProjectImporter: already registered
+!SESSION 2026-04-06 15:31:00.833 -----------------------------------------------
+eclipse.buildId=Version 2.1.1
+java.version=21.0.9
+java.vendor=Eclipse Adoptium
+BootLoader constants: OS=macosx, ARCH=aarch64, WS=cocoa, NL=ko_KR
+Framework arguments:  -keyring /Users/onepaperhoon/.eclipse_keyring
+Command-line arguments:  -os macosx -ws cocoa -arch aarch64 -keyring /Users/onepaperhoon/.eclipse_keyring
+
+!ENTRY com.st.stm32cube.ide.mcu.informationcenter 1 1 2026-04-06 15:31:12.220
+!MESSAGE Log4j2 initialized with config file /Users/onepaperhoon/linux-kernel-study/02-kernel-drivers/week6-rpi-stm32/day1-uart/stm32/UART_Echo/.metadata/.log4j2.xml
+
+!ENTRY com.st.stm32cube.ide.mcu.ide 1 1 2026-04-06 15:31:14.020
+!MESSAGE Started RMI Server, listening on port 41337
