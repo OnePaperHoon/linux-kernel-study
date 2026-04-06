@@ -28,7 +28,7 @@ static struct file *uart_file = NULL;
  * UART 열기
  */
 static int uart_open_port(void) {
-  uart_file = filp_open(UART_DEVICE, O_RDWR | O_NOCTTY | O_NONBLOCK, 0);
+  uart_file = filp_open(UART_DEVICE, O_RDWR | O_NOCTTY, 0);
 
   if (IS_ERR(uart_file)) {
     printk(KERN_ERR "uart_stm32: Failed to open %s\n", UART_DEVICE);
