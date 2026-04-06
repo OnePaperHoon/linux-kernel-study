@@ -1,7 +1,7 @@
 #MicroXplorer Configuration settings - do not modify
-CAD.formats=
-CAD.pinconfig=
-CAD.provider=
+CAD.formats=[]
+CAD.pinconfig=Dual
+CAD.provider=Component Search Engine
 File.Version=6
 GPIO.groupedBy=
 KeepUserPlacement=false
@@ -80,7 +80,7 @@ ProjectManager.ToolChainLocation=
 ProjectManager.UAScriptAfterPath=
 ProjectManager.UAScriptBeforePath=
 ProjectManager.UnderRoot=true
-ProjectManager.functionlistsort=1-SystemClock_Config-RCC-false-HAL-false,2-MX_GPIO_Init-GPIO-false-HAL-true,3-MX_USART2_UART_Init-USART2-false-HAL-true
+ProjectManager.functionlistsort=1-SystemClock_Config-RCC-false-HAL-false,2-MX_GPIO_Init-GPIO-false-HAL-true,3-MX_USART1_UART_Init-USART1-false-HAL-true
 RCC.CECFreq_Value=32786.88524590164
 RCC.CortexFreq_Value=16000000
 RCC.FamilyName=M
