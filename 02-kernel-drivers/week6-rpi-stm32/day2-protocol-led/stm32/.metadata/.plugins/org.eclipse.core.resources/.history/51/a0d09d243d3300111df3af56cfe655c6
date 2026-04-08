@@ -1,0 +1,66 @@
+#ifndef PACKET_PARSER_H
+#define PACKET_PARSER_H
+
+#include "protocol.h"
+
+typedef struct {
+	PacketState state;
+	Packet		pkt;
+	uint8_t		data_idx;
+	uint8_t		ready; // 1	이면 패킷 완성
+} PacketParser;
+
+static inline void parser_init(PacketParser *p) {
+	p->state = STATE_WAIT_START;
+	p->data_idx = 0;
+	p->ready = 0;
+}
+
+// 바이트를 하나씩 먹여주는 상태 머신
+// 반환 1 = 유요한 패킷 완성, 0 = 아직 수집중, -1 = 에러
+static inline int parser_feed(PacketParser *p, uint8_t byte) {
+	switch (p->state) {
+		case STATE_WAIT_START:
+			if (byte == PACKET_START) {
+				p->data_idx	= 0;
+				p->ready	= 0;
+				p->state	= STATE_GET_CMD;
+			}
+			return 0;
+
+		case STATE_GET_CMD:
+			p->pkt.cmd	= byte;
+			p->state	= STATE_GET_LEN;
+			return 0;
+
+		case STATE_GET_LEN:
+			p->pkt.len = byte;
+			if (byte > MAX_DATA_LEN) {
+				p->state = STATE_WAIT_START;
+				return -1; // 데이터 길이 초과
+			}
+			p->state = (byte == 0) ? STATE_GET_CHECKSUM : STATE_GET_DATA;
+			return 0;
+
+		case STATE_GET_CHECKSUM:
+			p->pkt.checksum = byte;
+			p->state = STATE_GET_END;
+			return 0;
+
+		case STATE_GET_END:
+			p->state = STATE_WAIT_START;
+			if (byte == PACKET_END) {
+				// 체크섬 검증
+				if (calc_cehcksum(&p->pkt) == p->pkt.checksum) {
+					p->ready = 1;
+					return 1;; // 유효한 패킷
+				}
+				return -1; // 체크섬 불일치
+			}
+			return -1; //END 마커 불일치
+	}
+	p->state = STATE_WAIT_START;
+	return -1;
+}
+
+#endif

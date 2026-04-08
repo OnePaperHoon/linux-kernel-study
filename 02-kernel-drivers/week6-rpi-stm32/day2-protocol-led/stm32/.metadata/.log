@@ -1,0 +1,16 @@
+!SESSION 2026-04-08 19:26:43.913 -----------------------------------------------
+eclipse.buildId=Version 2.1.1
+java.version=21.0.9
+java.vendor=Eclipse Adoptium
+BootLoader constants: OS=macosx, ARCH=aarch64, WS=cocoa, NL=ko_KR
+Framework arguments:  -keyring /Users/onepaperhoon/.eclipse_keyring
+Command-line arguments:  -os macosx -ws cocoa -arch aarch64 -keyring /Users/onepaperhoon/.eclipse_keyring
+
+!ENTRY com.st.stm32cube.ide.mcu.informationcenter 1 1 2026-04-08 19:27:00.060
+!MESSAGE Log4j2 initialized with config file /Users/onepaperhoon/linux-kernel-study/02-kernel-drivers/week6-rpi-stm32/day2-protocol-led/stm32/.metadata/.log4j2.xml
+
+!ENTRY com.st.stm32cube.ide.mcu.ide 1 1 2026-04-08 19:27:02.459
+!MESSAGE Started RMI Server, listening on port 41337
+
+!ENTRY org.eclipse.cdt.core 1 0 2026-04-08 19:27:48.860
+!MESSAGE Indexed 'protocol-led' (20 sources, 117 headers) in 2.64 sec: 11,475 declarations; 47,866 references; 1 unresolved inclusions; 92 syntax errors; 240 unresolved names (0.4%)
