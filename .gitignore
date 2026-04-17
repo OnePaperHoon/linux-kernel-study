@@ -18,3 +18,6 @@ CLAUDE.md
 # Kernel
 modules.order
 Module.symvers
+
+# STM32
+*/stm32/.metadata/*
